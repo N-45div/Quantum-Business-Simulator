@@ -237,24 +237,6 @@ npm run type-check   # Run TypeScript checks
 - **`/src/lib`**: Utility functions and configurations
 - **`/src/types`**: TypeScript type definitions
 
-## 🏆 **Hackathon Submission**
-
-This project is designed for the **BigQuery AI Hackathon** and demonstrates:
-
-- ✅ **Approach 1: AI Architect** - Uses BigQuery's generative AI for business applications
-- ✅ **Approach 2: Semantic Detective** - Leverages vector search for similar case analysis
-- ✅ **Real-World Problem**: Helps executives make better strategic decisions
-- ✅ **Professional UI**: Enterprise-grade interface suitable for C-suite presentations
-
-### Submission Checklist
-
-- [x] Working prototype with BigQuery AI integration
-- [x] Clean, documented code in public repository
-- [x] Professional UI with real data visualizations
-- [x] Comprehensive README with setup instructions
-- [x] Environment configuration for easy deployment
-- [ ] Demo video showcasing key features
-- [ ] Kaggle writeup with technical details
 
 ## 📈 **Performance**
 
@@ -263,14 +245,6 @@ This project is designed for the **BigQuery AI Hackathon** and demonstrates:
 - **Error Handling**: Graceful fallbacks for API failures
 - **Caching**: Smart caching for BigQuery results
 - **Rate Limiting**: Built-in protection for demo environments
-
-## 🤝 **Contributing**
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests if applicable
-5. Submit a pull request
 
 ## 📄 **License**
 
