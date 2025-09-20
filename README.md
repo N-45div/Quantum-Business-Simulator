@@ -38,7 +38,7 @@ The Quantum Business Simulator is a revolutionary business intelligence tool tha
 ### 1. Clone and Install
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/N-45div/Quantum-Business-Simulator.git
 cd quantum-business-simulator
 npm install
 ```
