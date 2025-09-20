@@ -1,103 +1,207 @@
-import Image from "next/image";
+'use client';
+
+import { motion } from 'framer-motion';
+import { ArrowRight, Zap, Brain, TrendingUp, Sparkles } from 'lucide-react';
+import Link from 'next/link';
+
+const FloatingParticle = ({ delay = 0 }: { delay?: number }) => (
+  <motion.div
+    className="absolute w-2 h-2 bg-primary rounded-full quantum-particle"
+    initial={{ opacity: 0 }}
+    animate={{ 
+      opacity: [0, 1, 0],
+      x: [0, Math.random() * 100 - 50],
+      y: [0, Math.random() * 100 - 50]
+    }}
+    transition={{
+      duration: 4,
+      delay,
+      repeat: Infinity,
+      repeatType: "loop"
+    }}
+  />
+);
+
+const FeatureCard = ({ icon: Icon, title, description, delay = 0 }: {
+  icon: any;
+  title: string;
+  description: string;
+  delay?: number;
+}) => (
+  <motion.div
+    initial={{ opacity: 0, y: 50 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{ duration: 0.6, delay }}
+    className="glass-morphism p-6 rounded-xl hover:bg-white/10 transition-all duration-300 group"
+  >
+    <div className="flex items-center mb-4">
+      <div className="p-3 rounded-lg quantum-gradient mr-4">
+        <Icon className="w-6 h-6 text-white" />
+      </div>
+      <h3 className="text-xl font-semibold">{title}</h3>
+    </div>
+    <p className="text-gray-300 group-hover:text-white transition-colors">
+      {description}
+    </p>
+  </motion.div>
+);
 
 export default function Home() {
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+    <div className="min-h-screen relative overflow-hidden">
+      {/* Animated Background Particles */}
+      <div className="absolute inset-0 pointer-events-none">
+        {Array.from({ length: 20 }).map((_, i) => (
+          <FloatingParticle key={i} delay={i * 0.2} />
+        ))}
+      </div>
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+      {/* Hero Section */}
+      <section className="relative min-h-screen flex items-center justify-center px-4">
+        <div className="max-w-6xl mx-auto text-center">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            className="mb-8"
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+            <div className="inline-flex items-center px-4 py-2 rounded-full glass-morphism mb-6">
+              <Sparkles className="w-4 h-4 text-accent mr-2" />
+              <span className="text-sm font-medium">Powered by BigQuery AI</span>
+            </div>
+            
+            <h1 className="text-5xl md:text-7xl font-bold mb-6 leading-tight">
+              Strategic Decision{' '}
+              <span className="quantum-gradient-text">Intelligence</span>
+              <br />
+              Platform
+            </h1>
+            
+            <p className="text-xl md:text-2xl text-muted-foreground mb-8 max-w-4xl mx-auto">
+              Advanced AI-powered scenario modeling for executive decision-making. 
+              Analyze strategic alternatives with data-driven insights and predictive analytics.
+            </p>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+            className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12"
           >
-            Read our docs
-          </a>
+            <Link href="/simulator">
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="px-8 py-4 quantum-gradient rounded-xl font-semibold text-lg flex items-center gap-2 quantum-glow"
+              >
+                Enter the Quantum Simulator
+                <ArrowRight className="w-5 h-5" />
+              </motion.button>
+            </Link>
+            
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="px-8 py-4 glass-morphism rounded-xl font-semibold text-lg border border-primary/30 hover:border-primary/60 transition-colors"
+            >
+              Watch Demo
+            </motion.button>
+          </motion.div>
+
+          {/* Stats */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.4 }}
+            className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-2xl mx-auto"
+          >
+            <div className="text-center">
+              <div className="text-3xl font-bold quantum-gradient-text">∞</div>
+              <div className="text-gray-400">Parallel Scenarios</div>
+            </div>
+            <div className="text-center">
+              <div className="text-3xl font-bold quantum-gradient-text">AI</div>
+              <div className="text-gray-400">Powered Analysis</div>
+            </div>
+            <div className="text-center">
+              <div className="text-3xl font-bold quantum-gradient-text">Real-time</div>
+              <div className="text-gray-400">Predictions</div>
+            </div>
+          </motion.div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
+      </section>
+
+      {/* Features Section */}
+      <section className="py-20 px-4 relative">
+        <div className="max-w-6xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            viewport={{ once: true }}
+            className="text-center mb-16"
+          >
+            <h2 className="text-4xl md:text-5xl font-bold mb-6">
+              The Future of{' '}
+              <span className="quantum-gradient-text">Business Intelligence</span>
+            </h2>
+            <p className="text-xl text-gray-300 max-w-3xl mx-auto">
+              Our quantum-powered simulator uses advanced AI to generate multiple timeline scenarios, 
+              helping executives make data-driven decisions with unprecedented clarity.
+            </p>
+          </motion.div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <FeatureCard
+              icon={Brain}
+              title="AI-Powered Scenarios"
+              description="Generate multiple business timelines using BigQuery's advanced AI capabilities and historical pattern analysis."
+              delay={0.1}
+            />
+            <FeatureCard
+              icon={TrendingUp}
+              title="Predictive Analytics"
+              description="Forecast market trends, revenue projections, and competitive responses across different decision paths."
+              delay={0.2}
+            />
+            <FeatureCard
+              icon={Zap}
+              title="Real-time Insights"
+              description="Get instant analysis and recommendations as scenarios are generated, with live progress tracking."
+              delay={0.3}
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="py-20 px-4 relative">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          viewport={{ once: true }}
+          className="max-w-4xl mx-auto text-center glass-morphism p-12 rounded-2xl"
         >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+          <h3 className="text-3xl md:text-4xl font-bold mb-6">
+            Ready to Explore Your Business Multiverse?
+          </h3>
+          <p className="text-xl text-gray-300 mb-8">
+            Join the future of strategic planning. Start simulating parallel business realities today.
+          </p>
+          <Link href="/simulator">
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="px-10 py-5 quantum-gradient rounded-xl font-semibold text-xl flex items-center gap-3 mx-auto quantum-glow"
+            >
+              Launch Simulator
+              <ArrowRight className="w-6 h-6" />
+            </motion.button>
+          </Link>
+        </motion.div>
+      </section>
     </div>
   );
 }

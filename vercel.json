@@ -1,0 +1,48 @@
+{
+  "buildCommand": "npm run build",
+  "outputDirectory": ".next",
+  "framework": "nextjs",
+  "installCommand": "npm install",
+  "devCommand": "npm run dev",
+  "env": {
+    "GOOGLE_CLOUD_PROJECT_ID": "@google_cloud_project_id",
+    "GOOGLE_APPLICATION_CREDENTIALS_JSON": "@google_application_credentials_json",
+    "NEXT_PUBLIC_APP_URL": "@next_public_app_url"
+  },
+  "functions": {
+    "src/app/api/scenarios/route.ts": {
+      "maxDuration": 30
+    },
+    "src/app/api/vector-search/route.ts": {
+      "maxDuration": 20
+    },
+    "src/app/api/forecast/route.ts": {
+      "maxDuration": 25
+    }
+  },
+  "headers": [
+    {
+      "source": "/api/(.*)",
+      "headers": [
+        {
+          "key": "Access-Control-Allow-Origin",
+          "value": "*"
+        },
+        {
+          "key": "Access-Control-Allow-Methods",
+          "value": "GET, POST, PUT, DELETE, OPTIONS"
+        },
+        {
+          "key": "Access-Control-Allow-Headers",
+          "value": "Content-Type, Authorization"
+        }
+      ]
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "/api/$1"
+    }
+  ]
+}
