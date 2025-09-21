@@ -224,8 +224,10 @@ export default function Simulator() {
         businessModel: 'B2B SaaS'
       };
 
-      // Call real API - ONLY use BigQuery AI results
-      const response = await fetch('/api/scenarios', {
+      console.log('🎯 Step 1: Generating scenarios...');
+
+      // Step 1: Generate scenarios
+      const scenariosResponse = await fetch('/api/scenarios', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -242,28 +244,76 @@ export default function Simulator() {
         }),
       });
 
-      if (!response.ok) {
-        throw new Error(`API Error: ${response.status} ${response.statusText}`);
+      if (!scenariosResponse.ok) {
+        throw new Error(`Scenarios API Error: ${scenariosResponse.status} ${scenariosResponse.statusText}`);
       }
 
-      const result = await response.json();
+      const scenariosResult = await scenariosResponse.json();
       
-      if (!result.success) {
-        throw new Error(`BigQuery AI Error: ${result.error || 'Unknown error'}`);
+      if (!scenariosResult.success) {
+        throw new Error(`Scenarios Error: ${scenariosResult.error || 'Unknown error'}`);
       }
 
-      if (!result.data || !Array.isArray(result.data)) {
-        throw new Error('Invalid response format from BigQuery AI');
+      if (!scenariosResult.data || !Array.isArray(scenariosResult.data)) {
+        throw new Error('Invalid scenarios response format');
       }
 
-      console.log('🎯 REAL BigQuery AI Response:', result.data);
-      setScenarios(result.data);
+      console.log('🎯 Scenarios Response:', scenariosResult.data);
+      console.log('🎯 Step 2: Generating forecast timelines...');
+
+      // Step 2: Generate forecasts with timeline data
+      const forecastResponse = await fetch('/api/forecast', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          baseScenario: {
+            id: 'base_scenario',
+            title: 'Business Decision Analysis',
+            description: query
+          },
+          variations: scenariosResult.data.map((scenario: any) => ({
+            name: scenario.title,
+            description: scenario.description,
+            parameters: {
+              confidence: scenario.confidence,
+              assumptions: scenario.key_assumptions,
+              outcome: scenario.expected_outcome
+            }
+          })),
+          timeHorizon: 12
+        }),
+      });
+
+      if (!forecastResponse.ok) {
+        throw new Error(`Forecast API Error: ${forecastResponse.status} ${forecastResponse.statusText}`);
+      }
+
+      const forecastResult = await forecastResponse.json();
+      
+      if (!forecastResult.success) {
+        throw new Error(`Forecast Error: ${forecastResult.error || 'Unknown error'}`);
+      }
+
+      console.log('🎯 Forecast Response:', forecastResult.data);
+
+      // Step 3: Combine scenario data with forecast timelines
+      const enhancedScenarios = scenariosResult.data.map((scenario: any, index: number) => ({
+        ...scenario,
+        timeline: forecastResult.data.forecasts[index]?.timeline || [],
+        summary: forecastResult.data.forecasts[index]?.summary || {}
+      }));
+
+      console.log('🎯 Enhanced Scenarios with Timelines:', enhancedScenarios);
+      
+      setScenarios(enhancedScenarios);
       setShowResults(true);
 
     } catch (error) {
-      console.error('❌ BigQuery AI Failed:', error);
+      console.error('❌ Error:', error);
       // Show error message instead of fallback
-      alert(`BigQuery AI Error: ${error instanceof Error ? error.message : 'Unknown error'}. Please check your BigQuery setup and try again.`);
+      alert(`Error: ${error instanceof Error ? error.message : 'Unknown error'}. Please check your setup and try again.`);
     } finally {
       setIsProcessing(false);
     }
@@ -490,14 +540,6 @@ export default function Simulator() {
                 transition={{ delay: 1.0 }}
                 className="text-center"
               >
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="px-8 py-4 quantum-gradient rounded-xl font-semibold flex items-center gap-2 mx-auto"
-                >
-                  <TrendingUp className="w-5 h-5" />
-                  Generate Detailed Analysis
-                </motion.button>
               </motion.div>
             </motion.div>
           )}

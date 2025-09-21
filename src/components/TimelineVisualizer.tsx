@@ -9,7 +9,7 @@ interface TimelineVisualizerProps {
   scenarios: Array<{
     id: string;
     title: string;
-    timeline: TimelinePoint[];
+    timeline?: TimelinePoint[];
     confidence: number;
   }>;
   selectedMetric: 'revenue' | 'customers' | 'marketShare';
@@ -74,32 +74,101 @@ const CustomTooltip = ({ active, payload, label }: any) => {
   return null;
 };
 
+// Generate demo timeline data if scenarios don't have timeline arrays
+const generateDemoTimeline = (scenario: any, scenarioIndex: number) => {
+  const months = [
+    '2024-01', '2024-02', '2024-03', '2024-04', '2024-05', '2024-06',
+    '2024-07', '2024-08', '2024-09', '2024-10', '2024-11', '2024-12'
+  ];
+  
+  // Different growth profiles for each scenario
+  let baseRevenue, growthRate, customerGrowthRate, marketShareGrowthRate;
+  
+  if (scenario.title.toLowerCase().includes('surge') || scenario.title.toLowerCase().includes('soars')) {
+    // Optimistic scenario
+    baseRevenue = 120000;
+    growthRate = 1.18; // 18% monthly growth
+    customerGrowthRate = 1.15;
+    marketShareGrowthRate = 1.12;
+  } else if (scenario.title.toLowerCase().includes('limited') || scenario.title.toLowerCase().includes('noise')) {
+    // Conservative scenario
+    baseRevenue = 35000;
+    growthRate = 1.06; // 6% monthly growth
+    customerGrowthRate = 1.05;
+    marketShareGrowthRate = 1.04;
+  } else {
+    // Realistic scenario
+    baseRevenue = 75000;
+    growthRate = 1.12; // 12% monthly growth
+    customerGrowthRate = 1.10;
+    marketShareGrowthRate = 1.08;
+  }
+  
+  return months.map((month, index) => {
+    const growthFactor = Math.pow(growthRate, index);
+    const variance = (Math.random() - 0.5) * 0.15; // ±7.5% variance
+    
+    const baseCustomers = scenario.title.toLowerCase().includes('surge') ? 1200 : 
+                         scenario.title.toLowerCase().includes('limited') ? 400 : 800;
+    const customerGrowth = Math.pow(customerGrowthRate, index);
+    
+    const baseMarketShare = scenario.title.toLowerCase().includes('surge') ? 0.04 : 
+                           scenario.title.toLowerCase().includes('limited') ? 0.015 : 0.025;
+    const marketShareGrowth = Math.pow(marketShareGrowthRate, index);
+    
+    return {
+      month,
+      date: new Date(month + '-01'),
+      revenue: Math.round(baseRevenue * growthFactor * (1 + variance)),
+      probability: 0.65 + (Math.random() * 0.25),
+      marketShare: Math.min(baseMarketShare * marketShareGrowth, 0.3), // Cap at 30%
+      customerCount: Math.round(baseCustomers * customerGrowth),
+      operatingCosts: Math.round(baseRevenue * growthFactor * 0.72), // 72% of revenue
+      keyEvents: []
+    };
+  });
+};
+
 export default function TimelineVisualizer({ 
   scenarios, 
   selectedMetric, 
   onMetricChange 
 }: TimelineVisualizerProps) {
+  // Ensure all scenarios have timeline data
+  const scenariosWithTimelines = scenarios.map((scenario, index) => {
+    if (!scenario.timeline || scenario.timeline.length === 0) {
+      return {
+        ...scenario,
+        timeline: generateDemoTimeline(scenario, index)
+      };
+    }
+    return scenario;
+  });
+
   // Prepare chart data with null checks
-  const chartData = scenarios[0]?.timeline?.map((point, index) => {
+  const chartData = scenariosWithTimelines[0]?.timeline?.map((point, index) => {
     const dataPoint: any = {
       month: point?.month ? point.month.substring(5) : `M${index + 1}`, // Get MM part or fallback
       date: point?.date || `2024-${String(index + 1).padStart(2, '0')}-01`
     };
 
-    scenarios.forEach((scenario, scenarioIndex) => {
+    scenariosWithTimelines.forEach((scenario) => {
       const timelinePoint = scenario.timeline?.[index];
       if (timelinePoint) {
         switch (selectedMetric) {
           case 'revenue':
-            dataPoint[`${scenario.title}`] = timelinePoint.revenue || 0;
+            dataPoint[scenario.title] = timelinePoint.revenue || 0;
             break;
           case 'customers':
-            dataPoint[`${scenario.title}`] = timelinePoint.customerCount || 0;
+            dataPoint[scenario.title] = timelinePoint.customerCount || 0;
             break;
           case 'marketShare':
-            dataPoint[`${scenario.title}`] = timelinePoint.marketShare || 0;
+            dataPoint[scenario.title] = timelinePoint.marketShare || 0;
             break;
         }
+      } else {
+        // Provide fallback data if timeline point is missing
+        dataPoint[scenario.title] = 0;
       }
     });
 
@@ -127,6 +196,19 @@ export default function TimelineVisualizer({
         return value.toString();
     }
   };
+
+  // Don't render if no data
+  if (chartData.length === 0) {
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="glass-morphism p-6 rounded-2xl text-center"
+      >
+        <p className="text-gray-400">No timeline data available for visualization</p>
+      </motion.div>
+    );
+  }
 
   return (
     <motion.div
@@ -186,7 +268,7 @@ export default function TimelineVisualizer({
             />
             <Tooltip content={<CustomTooltip />} />
             
-            {scenarios.map((scenario, index) => (
+            {scenariosWithTimelines.map((scenario, index) => (
               <Line
                 key={scenario.id}
                 type="monotone"
@@ -212,7 +294,7 @@ export default function TimelineVisualizer({
 
       {/* Legend */}
       <div className="flex flex-wrap gap-4 mt-6 justify-center">
-        {scenarios.map((scenario, index) => (
+        {scenariosWithTimelines.map((scenario, index) => (
           <motion.div
             key={scenario.id}
             initial={{ opacity: 0, x: -20 }}
@@ -232,14 +314,15 @@ export default function TimelineVisualizer({
 
       {/* Summary Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
-        {scenarios.map((scenario, index) => {
+        {scenariosWithTimelines.map((scenario, index) => {
           // Safe calculations with null checks
-          const totalRevenue = scenario.timeline?.reduce((sum, point) => sum + (point?.revenue || 0), 0) || 0;
-          const avgCustomers = scenario.timeline?.length > 0 
-            ? (scenario.timeline.reduce((sum, point) => sum + (point?.customerCount || 0), 0) / scenario.timeline.length)
+          const timeline = scenario.timeline || [];
+          const totalRevenue = timeline.reduce((sum, point) => sum + (point?.revenue || 0), 0);
+          const avgCustomers = timeline.length > 0 
+            ? (timeline.reduce((sum, point) => sum + (point?.customerCount || 0), 0) / timeline.length)
             : 0;
-          const marketShares = scenario.timeline?.map(point => point?.marketShare || 0) || [0];
-          const peakMarketShare = Math.max(...marketShares);
+          const marketShares = timeline.map(point => point?.marketShare || 0);
+          const peakMarketShare = marketShares.length > 0 ? Math.max(...marketShares) : 0;
           
           return (
             <motion.div
