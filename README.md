@@ -39,7 +39,7 @@ The Quantum Business Simulator is a revolutionary business intelligence tool tha
 
 ```bash
 git clone https://github.com/N-45div/Quantum-Business-Simulator.git
-cd quantum-business-simulator
+cd Quantum-Business-Simulator
 npm install
 ```
 
@@ -144,25 +144,6 @@ Try these example queries:
    "What if we hired aggressively during the economic downturn instead of cutting costs?"
    ```
 
-## 🚀 **Deployment**
-
-### Deploy to Vercel
-
-1. **Install Vercel CLI**:
-   ```bash
-   npm i -g vercel
-   ```
-
-2. **Configure Environment Variables** in Vercel Dashboard:
-   - `GOOGLE_CLOUD_PROJECT_ID`
-   - `GOOGLE_APPLICATION_CREDENTIALS_JSON`
-   - `NEXT_PUBLIC_APP_URL`
-
-3. **Deploy**:
-   ```bash
-   vercel --prod
-   ```
-
 ### Environment Variables for Production
 
 ```bash
@@ -211,13 +192,6 @@ quantum-business-simulator/
 - **Time Series Analysis**: Trend analysis and seasonal patterns
 - **Statistical Functions**: Variance, correlation, and confidence intervals
 
-## 🎨 **Design System**
-
-- **Theme**: Dark mode with quantum physics aesthetic
-- **Colors**: Electric blue (#00D4FF), Quantum purple (#8B5CF6), Neon green (#00FF88)
-- **Typography**: Inter for UI, JetBrains Mono for code
-- **Animations**: Framer Motion for smooth transitions
-
 ## 🔧 **Development**
 
 ### Available Scripts
@@ -259,6 +233,6 @@ MIT License - see LICENSE file for details
 
 ---
 
-**Built with ❤️ for the BigQuery AI Hackathon**
+**Built for the BigQuery AI Hackathon**
 
 *This project showcases the future of business intelligence - where AI meets real data to unlock strategic insights.*
